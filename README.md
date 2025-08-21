@@ -2,7 +2,7 @@
 
 ## Требования
 - Docker
-- Docker
+- Docker compose
 - Файл `.env` с настройками окружения
 
 ---
@@ -11,8 +11,8 @@
 
 1. **Клонировать репозиторий**
 ```bash
-git clone 
-cd 
+git clone https://github.com/CodeFramer0/test-IT-Lab.git
+cd test-IT-Lab
 ```
 
 2. **Настроить .env**
