@@ -1,11 +1,11 @@
 from django.db import models
 from hashid_field import HashidAutoField
-
+from django.conf import settings
 
 class Category(models.Model):
     id = HashidAutoField(
         primary_key=True,
-        salt="category_salt",
+        salt=settings.PASSWORD_SALT,
         min_length=8,
         verbose_name="ID",
     )

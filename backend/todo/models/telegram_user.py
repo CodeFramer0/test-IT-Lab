@@ -1,11 +1,11 @@
 from django.db import models
 from hashid_field import HashidAutoField
-
+from django.conf import settings
 
 class TelegramUser(models.Model):
     id = HashidAutoField(
         primary_key=True,
-        salt="telegram_user_salt",
+        salt=settings.PASSWORD_SALT,
         min_length=10,
         verbose_name="ID",
     )

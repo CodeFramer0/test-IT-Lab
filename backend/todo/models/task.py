@@ -3,12 +3,12 @@ from hashid_field import HashidAutoField
 
 from .category import Category
 from .telegram_user import TelegramUser
-
+from django.conf import settings
 
 class Task(models.Model):
     id = HashidAutoField(
         primary_key=True,
-        salt="task_salt",
+        salt=settings.PASSWORD_SALT,
         min_length=12,
         verbose_name="ID",
     )
