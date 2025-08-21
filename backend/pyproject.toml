@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "test-IT-Lab-backend"
+version = "0.1.53"
+description = "test-IT-Lab-backend"
+authors = ["CodeFramer <52332286+CodeFramer0@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+Django = "^5.2.4"
+djangorestframework = "^3.15.1"
+django-filter = "^24.2"
+drf-extra-fields = "^3.7.0"
+django-admin-rangefilter = "^0.13.3"
+
+psycopg2 = "^2.9.9"
+django-redis = "^5.4.0"
+redis = "^5.0.4"
+
+celery = "^5.3.6"
+django-celery-results = "^2.5.1"
+django-celery-beat = "^2.6.0"
+
+requests = "^2.32.3"
+aiohttp = "3.8.6"
+yarl = "^1.9.4"
+frozenlist = "^1.4.1"
+
+environs = "^9.5.0"
+gunicorn = "^23.0.0"
+marshmallow = "<3.20.0"
+
+# Telegram Bot
+aiogram = "^2.25.1"
+django-hashid-field = "^3.4.1"
+djangorestframework-serializer-extensions = "^2.0.1"
+
+
+[tool.poetry.group.dev.dependencies]
+freezegun = "^1.5.5"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "core.settings"
+python_files = ["test_*.py", "*_tests.py", "tests.py"]
+addopts = "-v --reuse-db"

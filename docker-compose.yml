@@ -1,0 +1,144 @@
+services:
+  web:
+    container_name: it_lab_django
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: sh entrypoint.dev.sh
+    environment:
+      - TZ=America/Adak
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      - db
+    volumes:
+      - static:/backend/static
+      - media:/backend/media
+      - ./backend/todo/migrations:/backend/todo/migrations
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health/"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  db:
+    container_name: it_lab_db
+    image: postgres:17.5
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Adak
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+
+  redis:
+    container_name: it_lab_redis
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+
+  bot:
+    container_name: it_lab_bot
+    environment:
+      - TZ=America/Adak
+    build: ./bot
+    restart: always
+    env_file:
+      - .env
+    command: python runbot.py
+    depends_on:
+      web:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+    
+  nginx:
+    container_name: it_lab_nginx
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - static:/backend/static
+      - media:/backend/media
+      - ./nginx/nginx_dev.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      web:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+
+  celery_worker:
+    container_name: it_lab_celery_worker
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    command: celery -A core worker -l info
+    volumes:
+      - static:/backend/static:rw
+      - media:/backend/media:rw
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Adak
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+
+  celery_beat:
+    container_name: it_lab_celery_beat
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    command: celery -A core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - static:/backend/static:rw
+      - media:/backend/media:rw
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Adak
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+
+
+volumes:
+  redis_data:
+  postgres_data:
+  static:
+  media:
